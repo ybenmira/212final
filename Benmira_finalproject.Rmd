@@ -27,18 +27,23 @@ library(haven)
 library(stargazer)
 library(patchwork)
 library(kableExtra)
+library(knitr)
 dta2 = read_dta("2019_6_Lucid_final_weight.dta")
 dta3 = read_dta("2020_8_Lucid_final_weight.dta")
 dta = bind_rows(dta2, dta3)
 ```
 
 # Introduction
+Research Question: Does anti-Muslim sentiment manifest itself equally among the four major racial groups in the USA: Asian, White, Black, and Hispanic, depending on levels of American Identification?
 
 The goal of this research project is to determine how race and American identity impacts policy preferences towards Muslims. This study pulls from an established article by Nazita Lajevardi and Kassra A.R. Oskooii, "Anti-Muslim policy preferences and boundaries of American identity across partisanship" (2024). This study regressed American identity with policy preferences. I am building off of this research and establishing how race impacts results. American identity can mean different things to different people and taking race into consideration can help us understand if this American identity is inherently xenophobic towards Muslims. By gauging specific policy points, we can get a wide scope information on how American identity and race impacts views of Muslims in different policy fields.
 
 I intend to regress attitudes on these policy preferences which include: Banning Muslims from entering the USA, patrolling Muslim neighborhoods and communities, banning sharia law, and restricting the construction of Mosques. I want to regress attitudes about these policy preferences by race and American Identity. I will control for race in different LM models to see how White Americans, Black Americans, Hispanic Americans, and Asian Americans differ in their policy preferences towards Muslims depending on their American identity. This is important to study, because as will become clear in the theory section, low ranking racial groups do not employ as many borders to the notion of being American. Further, any racial group that does come close to the high ranking racial group (Whites) in their policy preferences towards Muslims should be further studied as a means to understand how they can either penetrate the high ranking racial group and why is anti-outsider sentiments inherent in their notion of American identity even if they do not come from this high ranking group.
 
-Overall, I find that American identity for white people is a strong predictor of anti-Muslim policy preferences. For other racial groups, there is also a correlation between the two, albeit, when taking into account the R2 value it isn't wholly predictive. Hispanics come closest to white people in this behavior, albiet, still with a considerable predictive gap. Three important implications stem from these results. \# Theoretical Framework The theoretical approach for this question stems from Niambi Carter and Efren Perez's article, "Race and Nation: How Racial Hierarchy Shapes National Attachments" (2016). They largely argue that domestic racial hierarchies influence how Americans view their national identities, specifically how does relative positioning of one's race domestically impact their views on outsiders. High ranking status groups (Whites) will attempt to reinforce their own status by restricting entrance into their identity to maintain distinctiveness. Low ranking status groups will attempt to exhibit social creativity in line with Tafjel and Turner's Social Identity Theory. Because of their low ranking status, they attempt to create broader borders as they are unable to penetrate high ranking groups (as race is an impenetrable categorization); they will instead attempt to refashion the American identity to make it a civic and inclusive identity, not a racial one.
+Overall, I find that American identity for white people is a strong predictor of anti-Muslim policy preferences. For other racial groups, there is also a correlation between the two, albeit, when taking into account the R2 value it isn't wholly predictive. Hispanics come closest to white people in this behavior, albiet, still with a considerable predictive gap. Three important implications stem from these results. 
+
+# Theoretical Framework 
+The theoretical approach for this question stems from Niambi Carter and Efren Perez's article, "Race and Nation: How Racial Hierarchy Shapes National Attachments" (2016). They largely argue that domestic racial hierarchies influence how Americans view their national identities, specifically how does relative positioning of one's race domestically impact their views on outsiders. High ranking status groups (Whites) will attempt to reinforce their own status by restricting entrance into their identity to maintain distinctiveness. Low ranking status groups will attempt to exhibit social creativity in line with Tafjel and Turner's Social Identity Theory. Because of their low ranking status, they attempt to create broader borders as they are unable to penetrate high ranking groups (as race is an impenetrable categorization); they will instead attempt to refashion the American identity to make it a civic and inclusive identity, not a racial one.
 
 ![DAG Model without Controls](images/dagitty-model.png)
 
@@ -61,7 +66,8 @@ Like mentioned before, I am trying to understand Social Creativity vis a vis Soc
 AMID_hist = dta |> 
   ggplot(aes(x = Amid)) + 
   geom_histogram(binwidth = 0.05) + 
-  labs(title = "Histogram of American Identity", x = "American Identity", y = "Frequency")
+  labs(title = "Histogram of American Identity", 
+       x = "American Identity", y = "Frequency")
 
 #histogram of anti-Muslim policy preferences#
 M_Hist = dta |> 
@@ -85,7 +91,6 @@ R_Hist = dta |>
   labs(title = "Histogram of Restricting Mosques", x = "Restricting Mosques")
 
 DV_hists = M_Hist + P_Hist + S_Hist + R_Hist
-DV_hists
 ```
 
 ## Controls
@@ -108,12 +113,13 @@ White people top the charts, surprisingly hispanics follow closely behind for ba
 
 I will further gauge these models by controlling for democrat and republican, but this time, I will use ideology as an interaction term. By doing this, we can look at both if conservative or liberal and highly identifying Americans will express more anti-Muslim policy preferences. This will also tell us if ideology is a moderating factor in the relationship between American identity and anti-Muslim policy preferences. And finally, if ideology is correlated with American identity.
 
-When we include ideology as an interaction term, we are trying to see if the relationship between American identity and anti-Muslim policy preferences is stronger when ideology is fixed at 0. Across all racial categories and anti-Muslim policy preferences, when ideology is included, the coefficient or slope increases (except for banning sharia for hispanics which goes from 0.19 to 0.151). For liberals (ideology score of 0), American Identity increases actually has a much more pronounced effect on support for anti-Muslim policies. By using this interaction term we can isolate American identity. When taking into account the interaction values which indicates that the AMID coefficient for conservatives are lower which means that AMID has a less pronounced effect on support for anti-Muslim policy preferences, however this is mostly because the starting point of support for these policies is already high. Interestingly, for liberals, who we would normally assume always dislike discriminatory policies, American identity increases for them actually heighten support for anti-Muslim policy preferences. This indicates that across the board, support for anti-Muslim policy preferences isn't inherently ideological, it is intertwined with feelings of American identity.
+When we include ideology as an interaction term, we are trying to see if the relationship between American identity and anti-Muslim policy preferences is stronger when ideology is fixed at 0. Across all racial categories and anti-Muslim policy preferences, when ideology is included, the coefficient or slope increases (except for banning sharia for hispanics which goes from 0.19 to 0.151). For liberals (ideology score of 0), American Identity increases actually has a much more pronounced effect on support for anti-Muslim policies. By using this interaction term we can isolate American identity. When taking into account the interaction values which indicates that the AMID coefficient for conservatives are lower which means that AMID has a less pronounced effect on support for anti-Muslim policy preferences, however this is mostly because the starting point of support for these policies is already high. Interestingly, for liberals, who we would normally assume always dislike discriminatory policies, American identity increases for them actually heighten support for anti-Muslim policy preferences. For example: in this model, when AMID is 0 and ideology is 0, Ban Muslim support is 0.003 and when AMID is 0 and ideology is 1, the support is .503. When we make AMID 1 for both of these examples, the "liberal" is up to 0.462 and the "conservative" goes up to 0.535. This indicates that across the board, support for anti-Muslim policy preferences isn't inherently ideological, it is intertwined with feelings of American identity.
 
-Even though there are coefficient increases with the interaction term for the other races, the R2 values are still all very weak, and much weaker than white liberals in this case. This proves the central claim of this research project that for white people, the American identity is associated with animosity towards outsiders, even for liberals. Other races demonstrate increased support for anti-Muslim policies, but the relationship is not as predictive as it is for white people.
+Even though there are coefficient increases with the interaction term for the other races, the R2 values are still all very weak, and much weaker than white liberals in this case. This proves the central claim of this research project that for white people, the American identity is associated with animosity towards outsiders, even for liberals. Other races demonstrate increased support for anti-Muslim policies, but the relationship is not as predictive as it is for white people. However, for this research, we are attempting to purely identify the relationship between AMID and anti-Muslim policy preferences. We are not trying to capture the relationship between ideology and anti-Muslim policy preferences. This is why we are not looking at the interaction term for ideology and anti-Muslim policy preferences, instead the first model is best suited. 
 
-```{r warning = FALSE, message = FALSE}
-#base model that looks at American identity on anti-Muslim policy preferences controlling for ideology and political affiliation#
+```{r, include = FALSE, warning = FALSE, message = FALSE}
+#base model that looks at American identity on anti-Muslim policy preferences 
+#controlling for ideology and political affiliation
 dta_white = dta |> 
   filter(white == 1)
 dta_black = dta |> 
@@ -126,47 +132,51 @@ dta_asian = dta |>
 lmw_b = lm(banmuslims~ Amid + ideology_7pt + democrat + republican, dta_white)
 lmw_p = lm(patrol~ Amid+ ideology_7pt+ democrat + republican, dta_white)
 lmw_s = lm(sharia~ Amid+ ideology_7pt+ democrat + republican, dta_white)
-lmw_m = lm(restrictmosques~ Amid+ ideology_7pt+ democrat + republican, dta_white)
+lmw_m = lm(restrictmosques~ Amid+ ideology_7pt+ 
+             democrat + republican, dta_white)
 
 lmb_b = lm(banmuslims ~ Amid+ ideology_7pt+ democrat + republican, dta_black)
 lmb_p = lm(patrol ~ Amid+ ideology_7pt+ democrat + republican, dta_black)
 lmb_s = lm(sharia ~ Amid+ ideology_7pt+ democrat + republican, dta_black)
-lmb_m = lm(restrictmosques ~ Amid+ ideology_7pt+ democrat + republican, dta_black)
+lmb_m = lm(restrictmosques ~ Amid+ ideology_7pt+ 
+             democrat + republican, dta_black)
 
 lmh_b = lm(banmuslims ~ Amid+ ideology_7pt+ democrat + republican, dta_hispanic)
 lmh_p = lm(patrol ~ Amid+ ideology_7pt+ democrat + republican, dta_hispanic)
 lmh_s = lm(sharia ~ Amid+ ideology_7pt+ democrat + republican, dta_hispanic)
-lmh_m = lm(restrictmosques ~ Amid+ ideology_7pt+ democrat + republican, dta_hispanic)
+lmh_m = lm(restrictmosques ~ Amid+ ideology_7pt+ 
+             democrat + republican, dta_hispanic)
 
 lma_b = lm(banmuslims ~ Amid+ ideology_7pt+ democrat + republican, dta_asian)
 lma_p = lm(patrol ~ Amid+ ideology_7pt+ democrat + republican, dta_asian)
 lma_s = lm(sharia ~ Amid+ ideology_7pt+ democrat + republican, dta_asian)
-lma_m = lm(restrictmosques ~ Amid+ ideology_7pt+ democrat + republican, dta_asian)
+lma_m = lm(restrictmosques ~ Amid+ ideology_7pt+ 
+             democrat + republican, dta_asian)
 
 #stargazers organized by policies#
-ban_muslims_star = stargazer(lmw_b, lmh_b, lmb_b, lma_b, type = "text",
-          title = "Regression Results for Ban Muslims by Race",
-          column.labels = c("White", "Hispanic", "Black", "Asian"))
+b_p_star = stargazer(lmw_b, lmh_b, lmb_b, lma_b, lmw_p, lmh_p, lmb_p, 
+                             lma_p, type = 'text',
+                             omit.stat=c("f", "ser"),
+          title = "Regression Results for Ban and Patrol Muslims by Race",
+          column.labels = c("White", "Hispanic", "Black", "Asian", 
+                            "White", "Hispanic", "Black", "Asian"))
 
-patrol_star = stargazer(lmw_p, lmh_p, lmb_p, lma_p, type = "text",
-          title = "Regression Results for Patrol Muslims by Race",
-          column.labels = c("White", "Hispanic", "Black", "Asian"))
+s_m_star = stargazer(lmw_s, lmh_s, lmb_s, lma_s, lmw_m, lmh_m, lmb_m, lma_m, 
+                     type = 'text',
+                             omit.stat=c("f", "ser"),
+          title = "Regression Results for Ban Sharia and Mosques by Race",
+          column.labels = c("White", "Hispanic", "Black", "Asian", 
+                            "White", "Hispanic", "Black", "Asian"))
 
-sharia_star = stargazer(lmw_s, lmh_s, lmb_s, lma_s, type = "text",
-          title = "Regression Results for Ban Sharia by Race",
-          column.labels = c("White", "Hispanic", "Black", "Asian"))
-
-mosques_star = stargazer(lmw_m, lmh_m, lmb_m, lma_m, type = "text",
-          title = "Regression Results for Ban Mosques by Race",
-          column.labels = c("White", "Hispanic", "Black", "Asian"))
 #scatter plot with regression line#
-dta_white <- dta_white %>%
+dta_white = dta_white |>
   mutate(predicted_banmuslims = predict(lmw_b, newdata = dta_white), 
          predicted_patrol = predict(lmw_p, newdata = dta_white),
          predicted_sharia = predict(lmw_s, newdata = dta_white),
          predicted_restrictmosques = predict(lmw_m, newdata = dta_white))
 
-scatter_lmw_b = ggplot(dta_white, aes(x = Amid, y = banmuslims)) + geom_point() + 
+scatter_lmw_b = ggplot(dta_white, aes(x = Amid, 
+                                      y = banmuslims)) + geom_point() + 
   geom_smooth(method = "lm") + 
   labs(title = "White Americans: American Identity on Banning Muslims", 
        x = "American Identity", y = "Banning Muslims")
@@ -181,18 +191,20 @@ scatter_lmw_s = ggplot(dta_white, aes(x = Amid, y = sharia)) + geom_point() +
   labs(title = "White Americans: American Identity on Banning Sharia Law", 
        x = "American Identity", y = "Banning Sharia Law")
 
-scatter_lmw_r = ggplot(dta_white, aes(x = Amid, y = restrictmosques)) + geom_point() + 
+scatter_lmw_r = ggplot(dta_white, aes(x = Amid, 
+                                      y = restrictmosques)) + geom_point() + 
   geom_smooth(method = "lm")+ 
   labs(title = "White Americans: American Identity on Restricting Mosques", 
        x = "American Identity", y = "Restricting Mosques")
 
-dta_black <- dta_black %>%
+dta_black = dta_black |>
   mutate(predicted_banmuslims = predict(lmb_b, newdata = dta_black), 
          predicted_patrol = predict(lmb_p, newdata = dta_black),
          predicted_sharia = predict(lmb_s, newdata = dta_black),
          predicted_restrictmosques = predict(lmb_m, newdata = dta_black))
 
-scatter_lmb_b = ggplot(dta_black, aes(x = Amid, y = banmuslims)) + geom_point() + 
+scatter_lmb_b = ggplot(dta_black, aes(x = Amid, 
+                                      y = banmuslims)) + geom_point() + 
   geom_smooth(method = "lm")+ 
   labs(title = "Black Americans: American Identity on Banning Muslims", 
        x = "American Identity", y = "Banning Muslims") 
@@ -207,18 +219,20 @@ scatter_lmb_s = ggplot(dta_black, aes(x = Amid, y = sharia)) + geom_point() +
   labs(title = "Black Americans: American Identity on Banning Sharia Law", 
        x = "American Identity", y = "Banning Sharia Law")
 
-scatter_lmb_r = ggplot(dta_black, aes(x = Amid, y = restrictmosques)) + geom_point() + 
+scatter_lmb_r = ggplot(dta_black, aes(x = Amid, 
+                                      y = restrictmosques)) + geom_point() + 
   geom_smooth(method = "lm")+ 
   labs(title = "Black Americans: American Identity on Restricting Mosques", 
        x = "American Identity", y = "Restricting Mosques")
 
-dta_hispanic <- dta_hispanic %>%
+dta_hispanic = dta_hispanic |>
   mutate(predicted_banmuslims = predict(lmh_b, newdata = dta_hispanic), 
          predicted_patrol = predict(lmh_p, newdata = dta_hispanic),
          predicted_sharia = predict(lmh_s, newdata = dta_hispanic),
          predicted_restrictmosques = predict(lmh_m, newdata = dta_hispanic))
 
-scatter_lmh_b = ggplot(dta_hispanic, aes(x = Amid, y = banmuslims)) + geom_point() + 
+scatter_lmh_b = ggplot(dta_hispanic, aes(x = Amid, 
+                                         y = banmuslims)) + geom_point() + 
   geom_smooth(method = "lm")+ 
   labs(title = "Hispanic Americans: American Identity on Banning Muslims", 
        x = "American Identity", y = "Banning Muslims")
@@ -238,13 +252,14 @@ scatter_lmh_r = ggplot(dta_hispanic, aes(x = Amid, y = restrictmosques)) +
   labs(title = "Hispanic Americans: American Identity on Restricting Mosques", 
        x = "American Identity", y = "Restricting Mosques")
 
-dta_asian <- dta_asian %>%
+dta_asian = dta_asian |>
   mutate(predicted_banmuslims = predict(lma_b, newdata = dta_asian), 
          predicted_patrol = predict(lma_p, newdata = dta_asian),
          predicted_sharia = predict(lma_s, newdata = dta_asian),
          predicted_restrictmosques = predict(lma_m, newdata = dta_asian))
 
-scatter_lma_b = ggplot(dta_asian, aes(x = Amid, y = banmuslims)) + geom_point() + 
+scatter_lma_b = ggplot(dta_asian, aes(x = Amid, 
+                                      y = banmuslims)) + geom_point() + 
   geom_smooth(method = "lm")+ 
   labs(title = "Asian Americans: American Identity on Banning Muslims",
        x = "American Identity", y = "Banning Muslims")
@@ -259,7 +274,8 @@ scatter_lma_s = ggplot(dta_asian, aes(x = Amid, y = sharia)) + geom_point() +
   labs(title = "Asian Americans: American Identity on Banning Sharia Law", 
        x = "American Identity", y = "Banning Sharia Law")
 
-scatter_lma_r = ggplot(dta_asian, aes(x = Amid, y = restrictmosques)) + geom_point() + 
+scatter_lma_r = ggplot(dta_asian, aes(x = Amid, 
+                                      y = restrictmosques)) + geom_point() + 
   geom_smooth(method = "lm")+ 
   labs(title = "Asian Americans: American Identity on Restricting Mosques", 
        x = "American Identity", y = "Restricting Mosques")
@@ -267,24 +283,32 @@ scatter_lma_r = ggplot(dta_asian, aes(x = Amid, y = restrictmosques)) + geom_poi
 #scatter plots with banning muslims and patrolling communities grouped#
 scatters_b_p = scatter_lmw_b + scatter_lmw_p + scatter_lmb_b + scatter_lmb_p + 
   scatter_lmh_b + scatter_lmh_p + scatter_lma_b + scatter_lma_p 
-scatters_b_p
+
 #scatter plots with banning sharia low and restricting mosques grouped#
 scatters_s_r = scatter_lmw_s + scatter_lmw_r + scatter_lmb_s + scatter_lmb_r+ 
   scatter_lmh_s + scatter_lmh_r+ scatter_lma_s + scatter_lma_r
 
 #comparison of coefficients#
 amid_coefficients = data.frame(
-  Model = c("Ban Muslims (White)", "Patrol (White)", "Sharia (White)", "Restrict Mosques (White)",
-            "Ban Muslims (Black)", "Patrol (Black)", "Sharia (Black)", "Restrict Mosques (Black)",
-            "Ban Muslims (Hispanic)", "Patrol (Hispanic)", "Sharia (Hispanic)", "Restrict Mosques (Hispanic)",
-            "Ban Muslims (Asian)", "Patrol (Asian)", "Sharia (Asian)", "Restrict Mosques (Asian)"),
-  Coefficient = c(coef(lmw_b)["Amid"], coef(lmw_p)["Amid"], coef(lmw_s)["Amid"], coef(lmw_m)["Amid"],
-                  coef(lmb_b)["Amid"], coef(lmb_p)["Amid"], coef(lmb_s)["Amid"], coef(lmb_m)["Amid"],
-                  coef(lmh_b)["Amid"], coef(lmh_p)["Amid"], coef(lmh_s)["Amid"], coef(lmh_m)["Amid"],
-                  coef(lma_b)["Amid"], coef(lma_p)["Amid"], coef(lma_s)["Amid"], coef(lma_m)["Amid"])
-)
+  Model = c("Ban Muslims (White)", "Patrol (White)", "Sharia (White)", 
+            "Restrict Mosques (White)",
+            "Ban Muslims (Black)", "Patrol (Black)", "Sharia (Black)", 
+            "Restrict Mosques (Black)",
+            "Ban Muslims (Hispanic)", "Patrol (Hispanic)", "Sharia (Hispanic)", 
+            "Restrict Mosques (Hispanic)",
+            "Ban Muslims (Asian)", "Patrol (Asian)", "Sharia (Asian)", 
+            "Restrict Mosques (Asian)"),
+  Coefficient = c(coef(lmw_b)["Amid"], coef(lmw_p)["Amid"], 
+                  coef(lmw_s)["Amid"], coef(lmw_m)["Amid"],
+                  coef(lmb_b)["Amid"], coef(lmb_p)["Amid"], 
+                  coef(lmb_s)["Amid"], coef(lmb_m)["Amid"],
+                  coef(lmh_b)["Amid"], coef(lmh_p)["Amid"], 
+                  coef(lmh_s)["Amid"], coef(lmh_m)["Amid"],
+                  coef(lma_b)["Amid"], coef(lma_p)["Amid"], 
+                  coef(lma_s)["Amid"], coef(lma_m)["Amid"]))
 
-ggplot(amid_coefficients, aes(x = Coefficient, y = reorder(Model, Coefficient))) +
+coeff_graph = ggplot(amid_coefficients, aes(x = Coefficient, 
+                                            y = reorder(Model, Coefficient))) +
   geom_segment(aes(xend = 0, yend = Model), color = "blue") +
   geom_point(color = "blue", size = 3) +
   labs(title = "Coefficients of American Identity for Different Models",
@@ -292,21 +316,28 @@ ggplot(amid_coefficients, aes(x = Coefficient, y = reorder(Model, Coefficient)))
        y = "Model") +
   theme_minimal() +
   theme(axis.text.y = element_text(angle = 0, hjust = 1))
+coeff_graph
 
 #comparison of R2 values#
 r2_values = data.frame(
-  Model = c("Ban Muslims (White)", "Patrol (White)", "Sharia (White)", "Restrict Mosques (White)",
-            "Ban Muslims (Black)", "Patrol (Black)", "Sharia (Black)", "Restrict Mosques (Black)",
-            "Ban Muslims (Hispanic)", "Patrol (Hispanic)", "Sharia (Hispanic)", "Restrict Mosques (Hispanic)",
-            "Ban Muslims (Asian)", "Patrol (Asian)", "Sharia (Asian)", "Restrict Mosques (Asian)"),
-  R2 = c(summary(lmw_b)$r.squared, summary(lmw_p)$r.squared, summary(lmw_s)$r.squared, summary(lmw_m)$r.squared,
-         summary(lmb_b)$r.squared, summary(lmb_p)$r.squared, summary(lmb_s)$r.squared, summary(lmb_m)$r.squared,
-         summary(lmh_b)$r.squared, summary(lmh_p)$r.squared, summary(lmh_s)$r.squared, summary(lmh_m)$r.squared,
-         summary(lma_b)$r.squared, summary(lma_p)$r.squared, summary(lma_s)$r.squared, summary(lma_m)$r.squared)
-)
+  Model = c("Ban Muslims (White)", "Patrol (White)", "Sharia (White)", 
+            "Restrict Mosques (White)",
+            "Ban Muslims (Black)", "Patrol (Black)", "Sharia (Black)", 
+            "Restrict Mosques (Black)",
+            "Ban Muslims (Hispanic)", "Patrol (Hispanic)", "Sharia (Hispanic)", 
+            "Restrict Mosques (Hispanic)",
+            "Ban Muslims (Asian)", "Patrol (Asian)", "Sharia (Asian)", 
+            "Restrict Mosques (Asian)"),
+  R2 = c(summary(lmw_b)$r.squared, summary(lmw_p)$r.squared, 
+         summary(lmw_s)$r.squared, summary(lmw_m)$r.squared,
+         summary(lmb_b)$r.squared, summary(lmb_p)$r.squared, 
+         summary(lmb_s)$r.squared, summary(lmb_m)$r.squared,
+         summary(lmh_b)$r.squared, summary(lmh_p)$r.squared, 
+         summary(lmh_s)$r.squared, summary(lmh_m)$r.squared,
+         summary(lma_b)$r.squared, summary(lma_p)$r.squared, 
+         summary(lma_s)$r.squared, summary(lma_m)$r.squared))
 
-
-ggplot(r2_values, aes(x = R2, y = reorder(Model, R2))) +
+r2_graph = ggplot(r2_values, aes(x = R2, y = reorder(Model, R2))) +
   geom_segment(aes(xend = 0, yend = Model), color = "blue") +
   geom_point(color = "blue", size = 3) +
   labs(title = "R² Values for Different Models",
@@ -314,59 +345,85 @@ ggplot(r2_values, aes(x = R2, y = reorder(Model, R2))) +
        y = "Model") +
   theme_minimal() +
   theme(axis.text.y = element_text(angle = 0, hjust = 1))
+r2_graph
 
 #with ideology as an interaction term
-lmw_bi = lm(banmuslims~ Amid * ideology_7pt + democrat + republican, dta_white)
+lmw_bi = lm(banmuslims~ Amid * ideology_7pt + 
+              democrat + republican, dta_white)
 lmw_pi = lm(patrol~ Amid* ideology_7pt+ democrat + republican, dta_white)
 lmw_si = lm(sharia~ Amid* ideology_7pt+ democrat + republican, dta_white)
-lmw_mi = lm(restrictmosques~ Amid* ideology_7pt+ democrat + republican, dta_white)
+lmw_mi = lm(restrictmosques~ Amid* ideology_7pt+ 
+              democrat + republican, dta_white)
 
 lmb_bi = lm(banmuslims ~ Amid*ideology_7pt+ democrat + republican, dta_black)
 lmb_pi = lm(patrol ~ Amid* ideology_7pt+ democrat + republican, dta_black)
 lmb_si = lm(sharia ~ Amid* ideology_7pt+ democrat + republican, dta_black)
-lmb_mi = lm(restrictmosques ~ Amid* ideology_7pt+ democrat + republican, dta_black)
+lmb_mi = lm(restrictmosques ~ Amid* ideology_7pt+ 
+              democrat + republican, dta_black)
 
-lmh_bi = lm(banmuslims ~ Amid* ideology_7pt+ democrat + republican, dta_hispanic)
+lmh_bi = lm(banmuslims ~ Amid* ideology_7pt+ 
+              democrat + republican, dta_hispanic)
 lmh_pi = lm(patrol ~ Amid* ideology_7pt+ democrat + republican, dta_hispanic)
 lmh_si = lm(sharia ~ Amid* ideology_7pt+ democrat + republican, dta_hispanic)
-lmh_mi = lm(restrictmosques ~ Amid* ideology_7pt+ democrat + republican, dta_hispanic)
+lmh_mi = lm(restrictmosques ~ Amid* ideology_7pt+ 
+              democrat + republican, dta_hispanic)
 
-lma_bi = lm(banmuslims ~ Amid* ideology_7pt+ democrat + republican, dta_asian)
+lma_bi = lm(banmuslims ~ Amid* ideology_7pt+ 
+              democrat + republican, dta_asian)
 lma_pi = lm(patrol ~ Amid* ideology_7pt+ democrat + republican, dta_asian)
 lma_si = lm(sharia ~ Amid* ideology_7pt+ democrat + republican, dta_asian)
-lma_mi = lm(restrictmosques ~ Amid* ideology_7pt+ democrat + republican, dta_asian)
+lma_mi = lm(restrictmosques ~ Amid* ideology_7pt+ 
+              democrat + republican, dta_asian)
 
 #interaction stargarzers#
-ban_muslims_int = stargazer(lmw_bi, lmh_bi, lmb_bi, lma_bi, type = "text",
-          title = "Regression Results for Ban Muslims by Race with Ideology as an Interaction Term",
-          column.labels = c("White", "Hispanic", "Black", "Asian"))
+b_star_i = stargazer(lmw_bi, lmh_bi, lmb_bi, lma_bi,
+                     type = "text",
+                             omit.stat=c("f", "ser"),
+                     title = "Regression Results for Ban 
+                     Muslims with Interaction",
+                     column.labels = c("White", "Hispanic", "Black", "Asian"))
 
-patrol_int = stargazer(lmw_pi, lmh_pi, lmb_pi, lma_pi, type = "text",
-          title = "Regression Results for Patrol Muslims by Race with Ideology as an Interaction Term",
-          column.labels = c("White", "Hispanic", "Black", "Asian"))
+p_star_i = stargazer(lmw_pi, lmh_pi, lmb_pi, lma_pi,
+                     type = "text",
+                             omit.stat=c("f", "ser"),
+                     title = "Regression Results for Patrol 
+                     Muslims with Interaction",
+                     column.labels = c("White", "Hispanic", "Black", "Asian"))
 
-sharia_int = stargazer(lmw_si, lmh_si, lmb_si, lma_si, type = "text",
-          title = "Regression Results for Ban Sharia by Race with Ideology as an Interaction Term",
-          column.labels = c("White", "Hispanic", "Black", "Asian"))
+s_star_i = stargazer(lmw_si, lmh_si, lmb_si, lma_si, type = "text",
+                             omit.stat=c("f", "ser"),
+                     title = "Regression Results for
+                     Ban Sharia with Interaction",
+                     column.labels = c("White", "Hispanic", "Black", "Asian"))
 
-mosques_int = stargazer(lmw_mi, lmh_mi, lmb_mi, lma_mi, type = "text",
-          title = "Regression Results for Ban Mosques by Race with Ideology as an Interaction Term",
-          column.labels = c("White", "Hispanic", "Black", "Asian"))
+m_star_i = stargazer(lmw_mi, lmh_mi, lmb_mi, lma_mi, type = "text",
+                             omit.stat=c("f", "ser"), 
+                     title = "Regression Results for 
+                     Restrict Mosques with Interaction",
+                     column.labels = c("White", "Hispanic", "Black", "Asian"))
 
 #new graphs for comparison with ideology as an interaction term#
 amid_coefficients = data.frame(
-  Model = c("Ban Muslims (White)", "Patrol (White)", "Sharia (White)", "Restrict Mosques (White)",
-            "Ban Muslims (Black)", "Patrol (Black)", "Sharia (Black)", "Restrict Mosques (Black)",
-            "Ban Muslims (Hispanic)", "Patrol (Hispanic)", "Sharia (Hispanic)", "Restrict Mosques (Hispanic)",
-            "Ban Muslims (Asian)", "Patrol (Asian)", "Sharia (Asian)", "Restrict Mosques (Asian)"),
-  Coefficient = c(coef(lmw_bi)["Amid"], coef(lmw_pi)["Amid"], coef(lmw_si)["Amid"], coef(lmw_mi)["Amid"],
-                  coef(lmb_bi)["Amid"], coef(lmb_pi)["Amid"], coef(lmb_si)["Amid"], coef(lmb_mi)["Amid"],
-                  coef(lmh_bi)["Amid"], coef(lmh_pi)["Amid"], coef(lmh_si)["Amid"], coef(lmh_mi)["Amid"],
-                  coef(lma_bi)["Amid"], coef(lma_pi)["Amid"], coef(lma_si)["Amid"], coef(lma_mi)["Amid"])
-)
-
+  Model = c("Ban Muslims (White)", "Patrol (White)", "Sharia (White)", 
+            "Restrict Mosques (White)",
+            "Ban Muslims (Black)", "Patrol (Black)", "Sharia (Black)", 
+            "Restrict Mosques (Black)",
+            "Ban Muslims (Hispanic)", "Patrol (Hispanic)", "Sharia (Hispanic)", 
+            "Restrict Mosques (Hispanic)",
+            "Ban Muslims (Asian)", "Patrol (Asian)", "Sharia (Asian)", 
+            "Restrict Mosques (Asian)"),
+  Coefficient = c(coef(lmw_bi)["Amid"], coef(lmw_pi)["Amid"], 
+                  coef(lmw_si)["Amid"], coef(lmw_mi)["Amid"],
+                  coef(lmb_bi)["Amid"], coef(lmb_pi)["Amid"], 
+                  coef(lmb_si)["Amid"], coef(lmb_mi)["Amid"],
+                  coef(lmh_bi)["Amid"], coef(lmh_pi)["Amid"], 
+                  coef(lmh_si)["Amid"], coef(lmh_mi)["Amid"],
+                  coef(lma_bi)["Amid"], coef(lma_pi)["Amid"], 
+                  coef(lma_si)["Amid"], coef(lma_mi)["Amid"]))
 # Plot coefficients
-ggplot(amid_coefficients, aes(x = Coefficient, y = reorder(Model, Coefficient))) +
+coeff_graph_int = ggplot(amid_coefficients, 
+                         aes(x = Coefficient, 
+                             y = reorder(Model, Coefficient))) +
   geom_segment(aes(xend = 0, yend = Model), color = "blue") +
   geom_point(color = "blue", size = 3) +
   labs(title = "Coefficients with Ideology as an Interaction Term",
@@ -374,21 +431,27 @@ ggplot(amid_coefficients, aes(x = Coefficient, y = reorder(Model, Coefficient)))
        y = "Model") +
   theme_minimal() +
   theme(axis.text.y = element_text(angle = 0, hjust = 1))
-
+coeff_graph_int
 # Create a data frame for R2 values
 r2_values = data.frame(
-  Model = c("Ban Muslims (White)", "Patrol (White)", "Sharia (White)", "Restrict Mosques (White)",
-            "Ban Muslims (Black)", "Patrol (Black)", "Sharia (Black)", "Restrict Mosques (Black)",
-            "Ban Muslims (Hispanic)", "Patrol (Hispanic)", "Sharia (Hispanic)", "Restrict Mosques (Hispanic)",
-            "Ban Muslims (Asian)", "Patrol (Asian)", "Sharia (Asian)", "Restrict Mosques (Asian)"),
-  R2 = c(summary(lmw_bi)$r.squared, summary(lmw_pi)$r.squared, summary(lmw_si)$r.squared, summary(lmw_mi)$r.squared,
-         summary(lmb_bi)$r.squared, summary(lmb_pi)$r.squared, summary(lmb_si)$r.squared, summary(lmb_mi)$r.squared,
-         summary(lmh_bi)$r.squared, summary(lmh_pi)$r.squared, summary(lmh_si)$r.squared, summary(lmh_mi)$r.squared,
-         summary(lma_bi)$r.squared, summary(lma_pi)$r.squared, summary(lma_si)$r.squared, summary(lma_mi)$r.squared)
-)
-
+  Model = c("Ban Muslims (White)", "Patrol (White)", "Sharia (White)", 
+            "Restrict Mosques (White)",
+            "Ban Muslims (Black)", "Patrol (Black)", "Sharia (Black)", 
+            "Restrict Mosques (Black)",
+            "Ban Muslims (Hispanic)", "Patrol (Hispanic)", "Sharia (Hispanic)", 
+            "Restrict Mosques (Hispanic)",
+            "Ban Muslims (Asian)", "Patrol (Asian)", "Sharia (Asian)", 
+            "Restrict Mosques (Asian)"),
+  R2 = c(summary(lmw_bi)$r.squared, summary(lmw_pi)$r.squared, 
+         summary(lmw_si)$r.squared, summary(lmw_mi)$r.squared,
+         summary(lmb_bi)$r.squared, summary(lmb_pi)$r.squared, 
+         summary(lmb_si)$r.squared, summary(lmb_mi)$r.squared,
+         summary(lmh_bi)$r.squared, summary(lmh_pi)$r.squared, 
+         summary(lmh_si)$r.squared, summary(lmh_mi)$r.squared,
+         summary(lma_bi)$r.squared, summary(lma_pi)$r.squared, 
+         summary(lma_si)$r.squared, summary(lma_mi)$r.squared))
 # Plot R2 values
-ggplot(r2_values, aes(x = R2, y = reorder(Model, R2))) +
+r2_graph_int = ggplot(r2_values, aes(x = R2, y = reorder(Model, R2))) +
   geom_segment(aes(xend = 0, yend = Model), color = "blue") +
   geom_point(color = "blue", size = 3) +
   labs(title = "R² Values with Ideology as an Interaction Term",
@@ -396,27 +459,31 @@ ggplot(r2_values, aes(x = R2, y = reorder(Model, R2))) +
        y = "Model") +
   theme_minimal() +
   theme(axis.text.y = element_text(angle = 0, hjust = 1))
-
+r2_graph_int
 ```
 
 # Regression Diagnostics
 
 As noted in the previous section, Hispanics have some influential data points that are driving up the coefficients as evidenced by the weak R2 value. I want to run regression diagnostics on the Ban Muslims for Hispanics regression models to determine if there are influential data points.
 
-```{r, warning = FALSE, message = FALSE}
+```{r, include = FALSE, warning = FALSE, message = FALSE, fig.show = "hold"}
 library(car)
 #multicollinarity test#
-vif(lmh_b)
+vif_h_b = vif(lmh_b)
 
 #influence plot#
-influenceIndexPlot(lmh_b)
+inf_h_b = influenceIndexPlot(lmh_b)
 dta_hispanic1 = dta_hispanic[-101,] [-201,] [-203,] [-232,] [-363,]
 
-lmh_b1 = lm(banmuslims ~ Amid+ ideology_7pt+ democrat + republican, dta_hispanic1)
+lmh_b1 = lm(banmuslims ~ Amid+ ideology_7pt+ 
+              democrat + republican, dta_hispanic1)
 
-#new stargazer comparing new hispanic with the other racial categories for banning muslims#
-ban_muslims_star_influence = stargazer(lmw_b, lmh_b1, lmb_b, lma_b, type = "text",
-          title = "Regression Results for Ban Muslims by Race without Influential Hispanic points",
+#new stargazer comparing new hispanic for banning muslims#
+ban_muslims_star_influence = stargazer(lmw_b, lmh_b1, lmb_b, lma_b, 
+                                       type = "text",
+                                       omit.stat=c("f", "ser"),
+          title = "Regression Results for Ban Muslims by 
+          Race without Influential Hispanic points",
           column.labels = c("White", "Hispanic", "Black", "Asian"))
 
 ```
